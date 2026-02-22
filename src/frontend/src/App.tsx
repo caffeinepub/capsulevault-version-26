@@ -17,6 +17,7 @@ import { DomainVerification } from './components/DomainVerification';
 import { BackendHealthBanner } from './components/BackendHealthBanner';
 import { useBackendHealth } from './hooks/useQueries';
 import { checkAndNotifyReminders } from './lib/reminders';
+import { performHealthCheck } from './lib/healthCheck';
 import type { Capsule } from './backend';
 
 const queryClient = new QueryClient({
@@ -45,6 +46,14 @@ function AppContent() {
   const { data: isHealthy, isLoading: isHealthCheckLoading } = useBackendHealth();
 
   useEffect(() => {
+    console.log('[DIAGNOSTIC] App mounted, running initial health check...');
+    performHealthCheck().then(result => {
+      console.log('[DIAGNOSTIC] Initial health check results:', result);
+      if (result.errors.length > 0) {
+        console.error('[DIAGNOSTIC] Health check errors detected:', result.errors);
+      }
+    });
+
     checkAndNotifyReminders();
     const interval = setInterval(checkAndNotifyReminders, 60000);
     return () => clearInterval(interval);
@@ -86,7 +95,7 @@ function AppContent() {
     <div className="min-h-screen flex flex-col bg-background">
       <DomainVerification />
       <Header onNavigate={setCurrentPage} currentPage={currentPage} />
-      <BackendHealthBanner isHealthy={isHealthy ?? true} isLoading={isHealthCheckLoading} />
+      <BackendHealthBanner isHealthy={isHealthy} isLoading={isHealthCheckLoading} />
       <main className="flex-1">
         {renderPage()}
       </main>

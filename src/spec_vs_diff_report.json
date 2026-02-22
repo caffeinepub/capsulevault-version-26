@@ -1,15 +1,39 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T00:45:05.438Z",
-  "summary": "The implementation correctly adds the Google AdSense verification script to frontend/index.html as specified in REQ-1. All acceptance criteria are met: the script is present in the <head> section before the closing </head> tag, has the correct async and crossorigin attributes, includes the correct client ID, and no duplicates exist. No requirements are missing and no hallucinated features were added.",
-  "missing_requirements": [],
+  "generatedAt": "2026-02-22T01:01:56.048Z",
+  "summary": "The diff implements comprehensive diagnostic logging, health checks, and fixes the storage initialization banner issue. It also adds the /ads.txt endpoint. However, explicit read/write storage tests (REQ-5) are not implemented, and cycle balance checks (part of REQ-3) are only noted as 'not directly accessible' rather than being fully verified.",
+  "missing_requirements": [
+    {
+      "id": "REQ-5",
+      "requirement": "After storage is restored, verify functionality by running a simple read/write test: create a small test record in the storage system, then read it back to confirm both write and read operations succeed. The test should execute automatically after deployment and log success/failure results.",
+      "reason": "No code implements an automated read/write test that creates and retrieves a test record. The health check only calls checkHealth() but does not perform write/read operations to verify storage functionality.",
+      "evidence": [
+        "frontend/src/lib/healthCheck.ts",
+        "frontend/DIAGNOSIS.md"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Verify all relevant canister(s) have sufficient cycles",
+      "reason": "The health check logs 'Not directly accessible from frontend' for cycles balance and only infers sufficient cycles from the canister responding. No explicit cycles verification is implemented.",
+      "evidence": [
+        "frontend/src/lib/healthCheck.ts",
+        "frontend/DIAGNOSIS.md"
+      ]
+    }
+  ],
   "hallucinated_features": [],
-  "confidence": 1,
+  "confidence": 0.85,
   "changed_files": [
+    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/index.html",
-    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/DIAGNOSIS.md",
+    "frontend/public/ads.txt",
+    "frontend/src/App.tsx",
+    "frontend/src/components/BackendHealthBanner.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/lib/healthCheck.ts",
     "project_state.json"
   ]
 }

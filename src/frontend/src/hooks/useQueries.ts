@@ -94,21 +94,54 @@ export function useBackendHealth() {
   return useQuery<boolean>({
     queryKey: ['backend-health'],
     queryFn: async () => {
-      if (!actor) return false;
+      console.log('[DIAGNOSTIC] Health check initiated');
+      console.log('[DIAGNOSTIC] Actor available:', !!actor);
+      console.log('[DIAGNOSTIC] Actor fetching:', isFetching);
+      
+      if (!actor) {
+        console.error('[DIAGNOSTIC] Health check failed: Actor not available');
+        return false;
+      }
       
       try {
+        console.log('[DIAGNOSTIC] Calling checkHealth() method...');
         const isHealthy = await actor.checkHealth();
+        console.log('[DIAGNOSTIC] Health check response:', isHealthy);
+        
+        if (isHealthy) {
+          console.log('[DIAGNOSTIC] ✓ Backend storage is HEALTHY');
+        } else {
+          console.warn('[DIAGNOSTIC] ✗ Backend storage returned unhealthy status');
+        }
+        
         return isHealthy;
-      } catch (error) {
-        console.error('Backend health check failed:', error);
+      } catch (error: any) {
+        console.error('[DIAGNOSTIC] Health check exception:', {
+          message: error.message,
+          code: error.code,
+          name: error.name,
+          type: error.constructor.name
+        });
+        
+        // Classify error
+        if (error.message?.includes('fetch') || error.message?.includes('network')) {
+          console.error('[DIAGNOSTIC] Health check error type: NETWORK/AGENT ERROR');
+        } else if (error.message?.includes('reject') || error.message?.includes('trap')) {
+          console.error('[DIAGNOSTIC] Health check error type: CANISTER REJECT/TRAP');
+        } else if (error.message?.includes('unauthorized') || error.message?.includes('permission')) {
+          console.error('[DIAGNOSTIC] Health check error type: PERMISSION/AUTH ERROR');
+        } else {
+          console.error('[DIAGNOSTIC] Health check error type: UNKNOWN');
+        }
+        
         return false;
       }
     },
     enabled: !!actor && !isFetching,
-    retry: 3,
-    retryDelay: 1000,
-    refetchInterval: 30000, // Refetch every 30 seconds
-    staleTime: 10000 // Consider data stale after 10 seconds
+    retry: 2,
+    retryDelay: 2000,
+    refetchInterval: 30000,
+    staleTime: 10000
   });
 }
 

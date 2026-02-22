@@ -1,18 +1,56 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
-  "summary": "Web application with Google AdSense integration",
+  "projectStateVersion": 5,
+  "summary": "CapsuleVault web application with Google AdSense integration and persistent data storage. Currently diagnosing and fixing storage initialization failure that appears on page load.",
   "architectural_notes": [
-    "Google AdSense integration configured with client ID ca-pub-7830122739302232"
+    "Google AdSense integration configured with client ID ca-pub-7830122739302232",
+    "CapsuleVault uses persistent data storage for capsules and related records",
+    "Storage initialization occurs at app startup before user interaction",
+    "Storage error appeared after v37 deployment with AdSense integration"
   ],
-  "known_issues": [],
-  "isFixRequest": false,
+  "known_issues": [
+    "Storage offline error on page load after v37 deployment - under diagnosis",
+    "Storage initialization fails before user interaction, blocking normal operation"
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-add-the-google-adsense-verification-script-to-the-global-head-section-in-frontend-index-html-before-the-closing-head-tag-the-script-to-add-is-script-async-src-https-pagead2-googlesyndication-com-pagead-js-adsbygoogle-js-client-ca-pub-7830122739302232-crossorigin-anonymous-script-ensure-it-does-not-duplicate-if-already-present",
       "title": "Add the Google AdSense verification script to the global <head> section in frontend/index.html before the closing </head> tag. The script to add is: <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7830122739302232\" crossorigin=\"anonymous\"></script>. Ensure it does not duplicate if already present.",
       "reqIds": [
         "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-comprehensive-diagnostic-logging-to-the-storage-initialization-sequence-in-the-frontend-to-capture-the-exact-method-name-being-called-the-complete-error-text-code-the-canister-principal-being-contacted-whether-it-s-a-network-agent-error-vs-canister-reject-trap-vs-permission-issue-and-the-network-ic-mainnet-confirmation-log-output-should-be-visible-in-browser-console-during-page-load",
+      "title": "Add comprehensive diagnostic logging to the storage initialization sequence in the frontend to capture: the exact method name being called, the complete error text/code, the canister principal being contacted, whether it's a network/agent error vs canister reject/trap vs permission issue, and the network (IC mainnet) confirmation. Log output should be visible in browser console during page load.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-perform-automated-health-checks-on-the-storage-system-and-log-results-verify-all-relevant-canister-s-have-sufficient-cycles-confirm-the-network-is-ic-mainnet-verify-the-frontend-canister-id-bindings-used-in-production-are-correct-and-match-the-deployed-backend-canister-check-for-any-acl-auth-cors-configuration-issues-that-could-block-storage-calls-and-verify-the-backend-canister-is-installed-running-and-responding-to-health-check-queries",
+      "title": "Perform automated health checks on the storage system and log results: verify all relevant canister(s) have sufficient cycles, confirm the network is IC mainnet, verify the frontend canister ID bindings used in production are correct and match the deployed backend canister, check for any ACL/auth/CORS configuration issues that could block storage calls, and verify the backend canister is installed, running, and responding to health check queries.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-based-on-diagnostic-findings-apply-the-appropriate-fix-to-restore-storage-availability-if-cycles-are-low-top-up-cycles-if-wrong-canister-id-config-update-frontend-to-point-to-correct-production-canister-ids-if-asset-upload-storage-is-failing-redeploy-assets-if-storage-canister-is-missing-misconfigured-recreate-or-rebind-it-document-the-root-cause-identified-storage-architecture-used-specific-canister-ids-exact-failure-point-and-the-fix-applied",
+      "title": "Based on diagnostic findings, apply the appropriate fix to restore storage availability: if cycles are low, top up cycles; if wrong canister ID/config, update frontend to point to correct production canister IDs; if asset upload/storage is failing, redeploy assets; if storage canister is missing/misconfigured, recreate or rebind it. Document the root cause identified (storage architecture used, specific canister IDs, exact failure point) and the fix applied.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-ads-txt-endpoint-that-serves-the-exact-content-google-com-pub-7830122739302232-direct-f08c47fec0942fa0-without-quotes-as-plain-text-with-proper-mime-type-text-plain-the-endpoint-must-be-accessible-at-https-capsulevault-1ie-caffeine-xyz-ads-txt-for-adsense-publisher-verification",
+      "title": "Implement a /ads.txt endpoint that serves the exact content 'google.com, pub-7830122739302232, DIRECT, f08c47fec0942fa0' (without quotes) as plain text with proper MIME type (text/plain). The endpoint must be accessible at https://capsulevault-1ie.caffeine.xyz/ads.txt for AdSense publisher verification.",
+      "reqIds": [
+        "REQ-6"
       ],
       "version": 1
     }
@@ -22,6 +60,26 @@
       "id": "AR-1",
       "summary": "Add Google AdSense verification script to global head section",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Fix storage initialization failure causing 'Storage temporarily offline' error on page load",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Implement /ads.txt endpoint serving AdSense publisher verification",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "After storage is restored, verify functionality by running a simple read/write test: create a small test record in the storage system, then read it back to confirm both write and read operations succeed. The test should execute automatically after deployment and log success/failure results.",
+      "reqIds": [
+        "REQ-5"
+      ],
       "status": "pending"
     }
   ],

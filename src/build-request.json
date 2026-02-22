@@ -1,41 +1,120 @@
 {
   "kind": "build_request",
-  "title": "Add Google AdSense verification script to global head",
-  "priority": "normal",
+  "title": "Diagnose and fix storage initialization failure, then add ads.txt endpoint",
+  "projectName": "CapsuleVault",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Add the Google AdSense verification script to the global <head> section in frontend/index.html before the closing </head> tag. The script to add is: <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7830122739302232\" crossorigin=\"anonymous\"></script>. Ensure it does not duplicate if already present.",
+      "id": "REQ-2",
+      "text": "Add comprehensive diagnostic logging to the storage initialization sequence in the frontend to capture: the exact method name being called, the complete error text/code, the canister principal being contacted, whether it's a network/agent error vs canister reject/trap vs permission issue, and the network (IC mainnet) confirmation. Log output should be visible in browser console during page load.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-final"
+          "msg-latest"
         ],
         "quotes": [
-          "Add the following Google AdSense verification script inside the global <head> section of my website so it loads on every page.",
-          "Place it before the closing </head> tag and ensure it does not duplicate if already present."
+          "Add a lightweight diagnostic path (logs only; no UI changes): Log the exact failing call (method name) and error code/message. Log whether the storage canister principal is reachable and responding."
         ]
       },
       "acceptanceCriteria": [
-        "The AdSense script is present in frontend/index.html inside the <head> section",
-        "The script appears before the closing </head> tag",
-        "No duplicate AdSense scripts exist in the head section",
-        "The script has async attribute and correct crossorigin attribute",
-        "The client ID ca-pub-7830122739302232 is correctly included in the script URL"
+        "Diagnostic logs appear in browser console on page load",
+        "Logs capture the failing method name and full error text/code",
+        "Logs identify whether error is network/agent vs canister reject/trap vs permission issue",
+        "Logs confirm which canister ID is being contacted and on which network"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Perform automated health checks on the storage system and log results: verify all relevant canister(s) have sufficient cycles, confirm the network is IC mainnet, verify the frontend canister ID bindings used in production are correct and match the deployed backend canister, check for any ACL/auth/CORS configuration issues that could block storage calls, and verify the backend canister is installed, running, and responding to health check queries.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Run a health check: Verify the relevant canister(s) are installed, running, and have sufficient cycles. Verify any required canister IDs in configuration/env are present and correct for production. Verify permissions/ACLs for write operations (caller principal / anonymous access rules). Verify that the storage service isn't rate-limited or blocked by CORS/agent config."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Health check confirms cycles balance for each relevant canister",
+        "Health check verifies network is IC mainnet",
+        "Health check validates frontend canister ID bindings match production backend",
+        "Health check identifies any ACL/auth/CORS issues blocking storage access",
+        "Health check confirms backend canister is installed and responding"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Based on diagnostic findings, apply the appropriate fix to restore storage availability: if cycles are low, top up cycles; if wrong canister ID/config, update frontend to point to correct production canister IDs; if asset upload/storage is failing, redeploy assets; if storage canister is missing/misconfigured, recreate or rebind it. Document the root cause identified (storage architecture used, specific canister IDs, exact failure point) and the fix applied.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Fix based on what you find: If cycles are low: top up cycles and redeploy. If wrong canister ID/config: point frontend to the correct production canister IDs and redeploy. If asset upload/storage is failing: redeploy assets and confirm asset canister serves files reliably. If a storage canister is missing/misconfigured: recreate or rebind it, migrate minimal state if needed."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Storage initialization succeeds on page load without errors",
+        "The 'Storage temporarily offline' banner no longer appears",
+        "Root cause is documented (which canister(s), specific failure, architecture type)",
+        "Fix applied is documented (what changed and why it resolves the issue)"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "After storage is restored, verify functionality by running a simple read/write test: create a small test record in the storage system, then read it back to confirm both write and read operations succeed. The test should execute automatically after deployment and log success/failure results.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Confirmation steps: After redeploy, confirm the banner is gone. Confirm storage operations succeed by running a simple read/write test (create a small record and read it back)."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Write test successfully creates a small test record in storage",
+        "Read test successfully retrieves the saved record",
+        "Test results are logged and confirm storage read/write operations work",
+        "Banner is confirmed gone after successful storage restoration"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Implement a /ads.txt endpoint that serves the exact content 'google.com, pub-7830122739302232, DIRECT, f08c47fec0942fa0' (without quotes) as plain text with proper MIME type (text/plain). The endpoint must be accessible at https://capsulevault-1ie.caffeine.xyz/ads.txt for AdSense publisher verification.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "After storage is stable, implement /ads.txt so this URL works: https://capsulevault-1ie.caffeine.xyz/ads.txt and returns exactly: google.com, pub-7830122739302232, DIRECT, f08c47fec0942fa0"
+        ]
+      },
+      "acceptanceCriteria": [
+        "GET request to /ads.txt returns status 200",
+        "Response Content-Type header is text/plain",
+        "Response body is exactly: google.com, pub-7830122739302232, DIRECT, f08c47fec0942fa0",
+        "Endpoint is accessible at https://capsulevault-1ie.caffeine.xyz/ads.txt"
       ]
     }
   ],
   "constraints": [
-    "Do not modify any other layout, styling, or functionality",
-    "Only modify frontend/index.html to add the script",
-    "Preserve all existing meta tags and scripts in the head section"
+    "Do not modify application UI/UX or business logic during diagnostic phase",
+    "Do not change the existing capsule types, storage schema, or core functionality",
+    "Preserve all existing frontend components in frontend/src/components/ui as read-only",
+    "Maintain single-actor backend architecture with all Motoko logic in backend/main.mo",
+    "Ensure diagnostics are logging-only with no user-facing changes",
+    "Apply fixes only after diagnostic phase identifies root cause"
   ],
   "nonGoals": [
-    "Modifying backend code",
-    "Changing page layouts or components",
-    "Adding AdSense ad units to pages",
-    "Modifying CSS or styling",
-    "Changing application functionality"
+    "Redesigning the storage architecture or data models",
+    "Adding new capsule features or capabilities",
+    "Modifying the authentication flow or Internet Identity integration",
+    "Changing the UI theme or visual design",
+    "Implementing additional AdSense ad placements beyond ads.txt"
   ],
   "imageRequirements": {
     "required": [],

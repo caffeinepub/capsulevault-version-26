@@ -1,23 +1,104 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add Google AdSense verification script to global head",
+  "title": "Diagnose and fix storage initialization failure, then add ads.txt endpoint",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Add Google AdSense verification script to frontend/index.html <head> section",
+      "id": "REQ-2",
+      "summary": "Add comprehensive diagnostic logging to the storage initialization sequence to capture method names, error details, canister principals, error types, and network confirmation in browser console during page load",
       "acceptanceCriteria": [
-        "The AdSense script is present in frontend/index.html inside the <head> section",
-        "The script appears before the closing </head> tag",
-        "No duplicate AdSense scripts exist in the head section",
-        "The script has async attribute and correct crossorigin attribute",
-        "The client ID ca-pub-7830122739302232 is correctly included in the script URL"
+        "Diagnostic logs appear in browser console on page load",
+        "Logs capture the failing method name and full error text/code",
+        "Logs identify whether error is network/agent vs canister reject/trap vs permission issue",
+        "Logs confirm which canister ID is being contacted and on which network"
       ],
       "file_operations": [
         {
-          "path": "frontend/index.html",
+          "path": "frontend/src/hooks/useActor.ts",
           "operation": "modify",
-          "description": "Add the Google AdSense verification script <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7830122739302232\" crossorigin=\"anonymous\"></script> to the <head> section before the closing </head> tag. First check if an AdSense script with this client ID already exists to prevent duplication. If it exists, do not add it again. If it does not exist, insert it as the last element before </head>, maintaining all existing meta tags and scripts."
+          "description": "Add comprehensive diagnostic logging around actor initialization. Log the exact method being called during setup (e.g., 'checkHealth'), capture and log the complete error object including error.message, error.code, and error.name. Log the canister principal being contacted and the configured network (IC mainnet). Classify and log error types: network/agent errors (connection failures, timeout), canister errors (reject_code, trap messages), or permission/authorization errors. Ensure all logs are visible in browser console during page load and actor creation."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add diagnostic logging to the useCheckHealth query hook. Log when health check is initiated, the method name being invoked ('checkHealth'), and any errors returned. Log the complete error response including error type classification (network vs canister vs permission). Ensure logs clearly identify which backend capability failed and why."
+        },
+        {
+          "path": "frontend/src/components/BackendHealthBanner.tsx",
+          "operation": "modify",
+          "description": "Add diagnostic logging when the banner is shown or hidden. Log the health check status, whether the backend is reachable, and any error details that caused the banner to appear. This provides visibility into storage availability issues from the UI component perspective."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Perform automated frontend health checks and log results: verify canister ID bindings are correct, confirm network is IC mainnet, check for ACL/auth/CORS configuration issues, and validate backend canister responds to health checks",
+      "acceptanceCriteria": [
+        "Health check confirms cycles balance for each relevant canister",
+        "Health check verifies network is IC mainnet",
+        "Health check validates frontend canister ID bindings match production backend",
+        "Health check identifies any ACL/auth/CORS issues blocking storage access",
+        "Health check confirms backend canister is installed and responding"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useActor.ts",
+          "operation": "modify",
+          "description": "Implement automated health check logging during actor initialization. Log the configured canister IDs from environment variables and validate they are non-empty. Log the network being used (should be IC mainnet in production). Attempt to call the backend health check method and log success or failure with error classification. Log authentication state (anonymous vs authenticated principal). Detect and log any CORS or agent configuration errors during actor creation. Ensure all validation results are logged to browser console on app startup."
+        },
+        {
+          "path": "frontend/src/lib/healthCheck.ts",
+          "operation": "create",
+          "description": "Create a new utility module that performs comprehensive health checks. Export a function that validates: (1) canister ID bindings are present and correctly formatted, (2) network configuration points to IC mainnet, (3) actor can be created without CORS/agent errors, (4) backend responds to health check queries, (5) authentication state is valid. Return structured health check results with detailed error information for each check. This module is called during app initialization and logs all findings to console."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Integrate the health check module during app initialization. Call the health check function on mount and log all results to browser console. Include health check status in the dependency chain for React Query setup. Ensure health checks run before any backend operations are attempted. Log whether the app is ready to interact with storage or if configuration issues were detected."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Based on diagnostic findings, apply the appropriate frontend fix: update canister ID configuration if wrong, document root cause and fix applied",
+      "acceptanceCriteria": [
+        "Storage initialization succeeds on page load without errors",
+        "The 'Storage temporarily offline' banner no longer appears",
+        "Root cause is documented (which canister(s), specific failure, architecture type)",
+        "Fix applied is documented (what changed and why it resolves the issue)"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/.env.production",
+          "operation": "modify",
+          "description": "Review and update production canister ID bindings based on diagnostic findings. Ensure CANISTER_ID_BACKEND and any other relevant canister IDs point to the correct production canisters. Verify the IDs match the deployed backend canister on IC mainnet. Document the old and new values in comments if changes are made."
+        },
+        {
+          "path": "frontend/src/hooks/useActor.ts",
+          "operation": "modify",
+          "description": "Apply configuration fixes based on diagnostic results. If canister ID was incorrect, ensure the updated environment variable is properly loaded. If agent/CORS configuration was the issue, adjust HttpAgent setup. Add error recovery logic that retries actor creation after configuration fixes. Log the fix applied and confirm storage initialization now succeeds. Remove or improve error handling that may have masked the root cause."
+        },
+        {
+          "path": "frontend/DIAGNOSIS.md",
+          "operation": "create",
+          "description": "Create a documentation file capturing the diagnostic findings and fix applied. Document: (1) the storage architecture used (blob-storage component with ExternalBlob), (2) specific canister IDs involved (backend canister ID), (3) exact failure point identified (e.g., actor initialization, health check call, specific method), (4) root cause (wrong canister ID, network mismatch, permission issue, etc.), (5) fix applied (updated .env.production, changed agent config, etc.), (6) verification that storage initialization now succeeds and banner is gone. This file serves as a record for future troubleshooting."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Implement a /ads.txt endpoint that serves the exact content 'google.com, pub-7830122739302232, DIRECT, f08c47fec0942fa0' as plain text with proper MIME type for AdSense publisher verification",
+      "acceptanceCriteria": [
+        "GET request to /ads.txt returns status 200",
+        "Response Content-Type header is text/plain",
+        "Response body is exactly: google.com, pub-7830122739302232, DIRECT, f08c47fec0942fa0",
+        "Endpoint is accessible at https://capsulevault-1ie.caffeine.xyz/ads.txt"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/ads.txt",
+          "operation": "create",
+          "description": "Create a static ads.txt file in the public directory containing exactly the line: google.com, pub-7830122739302232, DIRECT, f08c47fec0942fa0 (no trailing newline or additional content). This file will be served directly by the frontend asset canister at /ads.txt with the correct MIME type (text/plain) automatically."
         }
       ]
     }

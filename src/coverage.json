@@ -1,44 +1,88 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T00:45:05.440Z",
+  "generatedAt": "2026-02-22T01:01:56.051Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 5,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-1",
-        "summary": "Add the Google AdSense verification script to the global <head> section in frontend/index.html before the closing </head> tag. The script to add is: <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7830122739302232\" crossorigin=\"anonymous\"></script>. Ensure it does not duplicate if already present.",
+        "id": "REQ-2",
+        "summary": "Add comprehensive diagnostic logging to the storage initialization sequence in the frontend to capture: the exact method name being called, the complete error text/code, the canister principal being contacted, whether it's a network/agent error vs canister reject/trap vs permission issue, and the network (IC mainnet) confirmation. Log output should be visible in browser console during page load.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/index.html"
+          "frontend/src/hooks/useActor.ts",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/components/BackendHealthBanner.tsx"
         ],
         "matchedFiles": [
-          "frontend/index.html"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/components/BackendHealthBanner.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Perform automated health checks on the storage system and log results: verify all relevant canister(s) have sufficient cycles, confirm the network is IC mainnet, verify the frontend canister ID bindings used in production are correct and match the deployed backend canister, check for any ACL/auth/CORS configuration issues that could block storage calls, and verify the backend canister is installed, running, and responding to health check queries.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useActor.ts",
+          "frontend/src/lib/healthCheck.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/lib/healthCheck.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Based on diagnostic findings, apply the appropriate fix to restore storage availability: if cycles are low, top up cycles; if wrong canister ID/config, update frontend to point to correct production canister IDs; if asset upload/storage is failing, redeploy assets; if storage canister is missing/misconfigured, recreate or rebind it. Document the root cause identified (storage architecture used, specific canister IDs, exact failure point) and the fix applied.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/.env.production",
+          "frontend/src/hooks/useActor.ts",
+          "frontend/DIAGNOSIS.md"
+        ],
+        "matchedFiles": [
+          "frontend/DIAGNOSIS.md"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "After storage is restored, verify functionality by running a simple read/write test: create a small test record in the storage system, then read it back to confirm both write and read operations succeed. The test should execute automatically after deployment and log success/failure results.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Implement a /ads.txt endpoint that serves the exact content 'google.com, pub-7830122739302232, DIRECT, f08c47fec0942fa0' (without quotes) as plain text with proper MIME type (text/plain). The endpoint must be accessible at https://capsulevault-1ie.caffeine.xyz/ads.txt for AdSense publisher verification.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/public/ads.txt"
+        ],
+        "matchedFiles": [
+          "frontend/public/ads.txt"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
-    "build-template/Dockerfile",
-    "build-template/LICENSE",
-    "build-template/README.md",
-    "build-template/deploy.sh",
-    "build-template/icp.yaml",
-    "build-template/src/backend/canister.yaml",
-    "build-template/src/frontend/canister.yaml",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/index.html",
-    "frontend/src/config.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/DIAGNOSIS.md",
+    "frontend/public/ads.txt",
+    "frontend/src/App.tsx",
+    "frontend/src/components/BackendHealthBanner.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/lib/healthCheck.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
