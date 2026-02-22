@@ -1,0 +1,15 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-22T00:45:05.438Z",
+  "summary": "The implementation correctly adds the Google AdSense verification script to frontend/index.html as specified in REQ-1. All acceptance criteria are met: the script is present in the <head> section before the closing </head> tag, has the correct async and crossorigin attributes, includes the correct client ID, and no duplicates exist. No requirements are missing and no hallucinated features were added.",
+  "missing_requirements": [],
+  "hallucinated_features": [],
+  "confidence": 1,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/index.html",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "project_state.json"
+  ]
+}

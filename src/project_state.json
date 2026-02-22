@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Web application with Google AdSense integration",
+  "architectural_notes": [
+    "Google AdSense integration configured with client ID ca-pub-7830122739302232"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-add-the-google-adsense-verification-script-to-the-global-head-section-in-frontend-index-html-before-the-closing-head-tag-the-script-to-add-is-script-async-src-https-pagead2-googlesyndication-com-pagead-js-adsbygoogle-js-client-ca-pub-7830122739302232-crossorigin-anonymous-script-ensure-it-does-not-duplicate-if-already-present",
+      "title": "Add the Google AdSense verification script to the global <head> section in frontend/index.html before the closing </head> tag. The script to add is: <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7830122739302232\" crossorigin=\"anonymous\"></script>. Ensure it does not duplicate if already present.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Add Google AdSense verification script to global head section",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "projectName": "Add Google AdSense verification script to global head",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

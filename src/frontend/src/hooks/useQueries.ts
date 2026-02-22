@@ -1,0 +1,351 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useActor } from './useActor';
+import { Principal } from '@icp-sdk/core/principal';
+import type { Capsule, CapsuleMetadata, CapsuleContent, Timestamp, CapsuleVerificationStatus, FeedbackEntry } from '../backend';
+import { LoveCategory, PredictionCategory, CapsuleType } from '../backend';
+import { getCurrentVaultKey, hashVaultKey } from '../lib/vaultKey';
+
+// Normalize claim code: trim, uppercase, accept both hyphenated and non-hyphenated
+function normalizeClaimCode(claimCode: string): string {
+  const trimmed = claimCode.trim();
+  const upper = trimmed.toUpperCase();
+  
+  // If it doesn't have a hyphen and starts with CAP, add the hyphen
+  if (!upper.includes('-') && upper.startsWith('CAP')) {
+    return `CAP-${upper.slice(3)}`;
+  }
+  
+  return upper;
+}
+
+// Generate random claim code
+function generateClaimCode(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = 'CAP-';
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+// Generate commit ID (hash)
+async function generateCommitId(content: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(content + Date.now().toString());
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Generate random capsule ID
+function generateCapsuleId(): string {
+  return `capsule_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+
+// Generate creation timestamp in UTC
+function generateCreationTimestamp(): Timestamp {
+  const now = new Date();
+  
+  // Format date as DD/MM/YYYY
+  const day = String(now.getUTCDate()).padStart(2, '0');
+  const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+  const year = now.getUTCFullYear();
+  const date = `${day}/${month}/${year}`;
+  
+  // Format time as HH:MM:SS
+  const hours = String(now.getUTCHours()).padStart(2, '0');
+  const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+  const time = `${hours}:${minutes}:${seconds}`;
+  
+  return {
+    date,
+    time,
+    timezone: 'UTC'
+  };
+}
+
+interface CreateCapsuleParams {
+  type: 'love' | 'prediction';
+  unlockTime: bigint;
+  loveData?: {
+    category: LoveCategory;
+    message: string;
+    note?: string;
+    anonymous: boolean;
+  };
+  predictionData?: {
+    category: PredictionCategory;
+    prediction: string;
+    confidence?: bigint;
+    explanation?: string;
+  };
+}
+
+interface SubmitFeedbackParams {
+  deviceId: string;
+  comment: string;
+}
+
+// Backend health check hook
+export function useBackendHealth() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<boolean>({
+    queryKey: ['backend-health'],
+    queryFn: async () => {
+      if (!actor) return false;
+      
+      try {
+        const isHealthy = await actor.checkHealth();
+        return isHealthy;
+      } catch (error) {
+        console.error('Backend health check failed:', error);
+        return false;
+      }
+    },
+    enabled: !!actor && !isFetching,
+    retry: 3,
+    retryDelay: 1000,
+    refetchInterval: 30000, // Refetch every 30 seconds
+    staleTime: 10000 // Consider data stale after 10 seconds
+  });
+}
+
+export function useCreateCapsule() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: CreateCapsuleParams): Promise<Capsule> => {
+      if (!actor) throw new Error('Actor not initialized');
+
+      // Check backend health before creating capsule
+      try {
+        const isHealthy = await actor.checkHealth();
+        if (!isHealthy) {
+          throw new Error('Storage temporarily offline. Please try again shortly.');
+        }
+      } catch (error) {
+        throw new Error('Storage temporarily offline. Please try again shortly.');
+      }
+
+      const capsuleId = generateCapsuleId();
+      const claimCode = generateClaimCode();
+      const vaultKey = getCurrentVaultKey();
+      const vaultKeyHash = vaultKey ? await hashVaultKey(vaultKey) : '';
+      const createdAtTimestamp = generateCreationTimestamp();
+
+      let content: CapsuleContent;
+
+      if (params.type === 'love' && params.loveData) {
+        content = {
+          __kind__: 'loveCapsule',
+          loveCapsule: {
+            category: params.loveData.category,
+            message: params.loveData.message,
+            note: params.loveData.note
+          }
+        };
+      } else if (params.type === 'prediction' && params.predictionData) {
+        const commitId = await generateCommitId(params.predictionData.prediction);
+        content = {
+          __kind__: 'predictionCapsule',
+          predictionCapsule: {
+            category: params.predictionData.category,
+            prediction: params.predictionData.prediction,
+            confidence: params.predictionData.confidence,
+            explanation: params.predictionData.explanation,
+            commitId
+          }
+        };
+      } else {
+        throw new Error('Invalid capsule type or missing data');
+      }
+
+      const metadata: CapsuleMetadata = {
+        vaultKeyHash,
+        createdAt: BigInt(Date.now() * 1_000_000),
+        capsuleType: params.type === 'love' ? CapsuleType.love : CapsuleType.prediction,
+        unlockAt: params.unlockTime,
+        claimCode,
+        createdAtTimestamp
+      };
+
+      // Create capsule on backend
+      await actor.createCapsule(capsuleId, content, metadata);
+
+      // Verify persistence by attempting to retrieve the capsule
+      try {
+        const retrievedCapsule = await actor.getCapsule(capsuleId);
+        if (!retrievedCapsule) {
+          throw new Error('Capsule persistence verification failed');
+        }
+      } catch (error) {
+        throw new Error('Error saving capsule. Please try again later — storage not confirmed.');
+      }
+
+      // Return the capsule object for the receipt page
+      const capsule: Capsule = {
+        id: capsuleId,
+        content,
+        metadata,
+        encrypted: true,
+        picture: undefined,
+        creator: Principal.anonymous()
+      };
+
+      return capsule;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['capsules'] });
+    }
+  });
+}
+
+export function useGetCapsule(claimCode: string) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Capsule>({
+    queryKey: ['capsule', claimCode],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not initialized');
+      
+      const normalizedCode = normalizeClaimCode(claimCode);
+      
+      // Get all capsules and find by normalized claim code
+      const allCapsules = await actor.getAllCapsules();
+      const capsule = allCapsules.find(c => {
+        const storedCode = normalizeClaimCode(c.metadata.claimCode);
+        return storedCode === normalizedCode;
+      });
+      
+      if (!capsule) {
+        // Log for debugging
+        console.error('Capsule not found:', {
+          enteredCode: claimCode,
+          normalizedCode,
+          availableCodes: allCapsules.map(c => c.metadata.claimCode)
+        });
+        throw new Error('Capsule not found in live storage. This capsule may have been created in a draft version. Please recreate it in the live app.');
+      }
+      
+      return capsule;
+    },
+    enabled: !!actor && !isFetching && !!claimCode,
+    retry: false
+  });
+}
+
+export function useGetCapsulesByVaultKey(vaultKeyHash: string) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Capsule[]>({
+    queryKey: ['capsules-by-vault-key', vaultKeyHash],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not initialized');
+      
+      if (!vaultKeyHash) {
+        return [];
+      }
+      
+      const capsules = await actor.getCapsulesByVaultKey(vaultKeyHash);
+      return capsules;
+    },
+    enabled: !!actor && !isFetching && !!vaultKeyHash,
+    retry: false
+  });
+}
+
+export function useCheckCapsuleExpiry(claimCode: string) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<boolean>({
+    queryKey: ['capsule-expiry', claimCode],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not initialized');
+      
+      const normalizedCode = normalizeClaimCode(claimCode);
+      
+      // Get all capsules and find by normalized claim code
+      const allCapsules = await actor.getAllCapsules();
+      const capsule = allCapsules.find(c => {
+        const storedCode = normalizeClaimCode(c.metadata.claimCode);
+        return storedCode === normalizedCode;
+      });
+      
+      if (!capsule) {
+        throw new Error('Capsule not found');
+      }
+      
+      return await actor.checkCapsuleExpiry(capsule.id);
+    },
+    enabled: !!actor && !isFetching && !!claimCode,
+    retry: false
+  });
+}
+
+export function useVerifyCapsule(claimCode: string, commitId: string | null) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<CapsuleVerificationStatus>({
+    queryKey: ['verify-capsule', claimCode, commitId],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not initialized');
+      
+      const normalizedCode = normalizeClaimCode(claimCode);
+      
+      const result = await actor.verifyCapsule(normalizedCode, commitId);
+      
+      if (result === null) {
+        // Log for debugging
+        console.error('Verification failed:', {
+          enteredCode: claimCode,
+          normalizedCode,
+          commitId,
+          environment: '1ie'
+        });
+        throw new Error('Capsule not found in live storage. This capsule may have been created in a draft version. Please recreate it in the live app.');
+      }
+      
+      return result;
+    },
+    enabled: !!actor && !isFetching && !!claimCode,
+    retry: false
+  });
+}
+
+// Feedback hooks
+export function useSubmitFeedback() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: SubmitFeedbackParams) => {
+      if (!actor) throw new Error('Actor not initialized');
+      
+      const result = await actor.submitFeedback(params.deviceId, params.comment);
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feedback'] });
+    }
+  });
+}
+
+export function useGetAllFeedback() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<FeedbackEntry[]>({
+    queryKey: ['feedback'],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not initialized');
+      
+      const feedback = await actor.getAllFeedback();
+      // Sort by timestamp descending (newest first)
+      return feedback.sort((a, b) => Number(b.timestamp - a.timestamp));
+    },
+    enabled: !!actor && !isFetching,
+    refetchInterval: 30000 // Refetch every 30 seconds
+  });
+}

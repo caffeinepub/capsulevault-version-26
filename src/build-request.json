@@ -1,0 +1,44 @@
+{
+  "kind": "build_request",
+  "title": "Add Google AdSense verification script to global head",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Add the Google AdSense verification script to the global <head> section in frontend/index.html before the closing </head> tag. The script to add is: <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7830122739302232\" crossorigin=\"anonymous\"></script>. Ensure it does not duplicate if already present.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "Add the following Google AdSense verification script inside the global <head> section of my website so it loads on every page.",
+          "Place it before the closing </head> tag and ensure it does not duplicate if already present."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The AdSense script is present in frontend/index.html inside the <head> section",
+        "The script appears before the closing </head> tag",
+        "No duplicate AdSense scripts exist in the head section",
+        "The script has async attribute and correct crossorigin attribute",
+        "The client ID ca-pub-7830122739302232 is correctly included in the script URL"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify any other layout, styling, or functionality",
+    "Only modify frontend/index.html to add the script",
+    "Preserve all existing meta tags and scripts in the head section"
+  ],
+  "nonGoals": [
+    "Modifying backend code",
+    "Changing page layouts or components",
+    "Adding AdSense ad units to pages",
+    "Modifying CSS or styling",
+    "Changing application functionality"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

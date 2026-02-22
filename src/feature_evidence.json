@@ -1,0 +1,27 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-add-the-google-adsense-verification-script-to-the-global-head-section-in-frontend-index-html-before-the-closing-head-tag-the-script-to-add-is-script-async-src-https-pagead2-googlesyndication-com-pagead-js-adsbygoogle-js-client-ca-pub-7830122739302232-crossorigin-anonymous-script-ensure-it-does-not-duplicate-if-already-present",
+      "featureTitle": "Add the Google AdSense verification script to the global <head> section in frontend/index.html before the closing </head> tag. The script to add is: <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7830122739302232\" crossorigin=\"anonymous\"></script>. Ensure it does not duplicate if already present.",
+      "files": [
+        "frontend/index.html"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "qr-code@1.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

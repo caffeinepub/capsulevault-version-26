@@ -1,0 +1,25 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Add Google AdSense verification script to global head",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Add Google AdSense verification script to frontend/index.html <head> section",
+      "acceptanceCriteria": [
+        "The AdSense script is present in frontend/index.html inside the <head> section",
+        "The script appears before the closing </head> tag",
+        "No duplicate AdSense scripts exist in the head section",
+        "The script has async attribute and correct crossorigin attribute",
+        "The client ID ca-pub-7830122739302232 is correctly included in the script URL"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Add the Google AdSense verification script <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7830122739302232\" crossorigin=\"anonymous\"></script> to the <head> section before the closing </head> tag. First check if an AdSense script with this client ID already exists to prevent duplication. If it exists, do not add it again. If it does not exist, insert it as the last element before </head>, maintaining all existing meta tags and scripts."
+        }
+      ]
+    }
+  ]
+}
