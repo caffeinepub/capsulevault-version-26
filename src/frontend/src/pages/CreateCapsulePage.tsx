@@ -322,16 +322,6 @@ export function CreateCapsulePage({
           </p>
         </div>
 
-        {/* AdSense Placeholder - Top */}
-        <div className="mb-8 p-6 md:p-8 border-2 border-dashed border-muted-foreground/30 rounded-lg bg-muted/20 text-center">
-          <p className="text-sm md:text-base text-muted-foreground font-medium">
-            Ad Placeholder
-          </p>
-          <p className="text-xs text-muted-foreground/70 mt-1">
-            728x90 (Desktop) / 320x50 (Mobile)
-          </p>
-        </div>
-
         <div className="grid md:grid-cols-2 gap-6 mb-12">
           <Card
             className="cursor-pointer hover:shadow-lg transition-all border-2 hover:border-primary/50"
@@ -381,16 +371,6 @@ export function CreateCapsulePage({
             </CardContent>
           </Card>
         </div>
-
-        {/* AdSense Placeholder - Bottom */}
-        <div className="p-6 md:p-8 border-2 border-dashed border-muted-foreground/30 rounded-lg bg-muted/20 text-center">
-          <p className="text-sm md:text-base text-muted-foreground font-medium">
-            Ad Placeholder
-          </p>
-          <p className="text-xs text-muted-foreground/70 mt-1">
-            300x250 (Mobile) / 728x90 (Desktop)
-          </p>
-        </div>
       </div>
     );
   }
@@ -406,16 +386,6 @@ export function CreateCapsulePage({
         isHealthy={isBackendHealthy ?? true}
         isLoading={isHealthCheckLoading}
       />
-
-      {/* AdSense Placeholder - Top of Form */}
-      <div className="mb-8 p-6 md:p-8 border-2 border-dashed border-muted-foreground/30 rounded-lg bg-muted/20 text-center">
-        <p className="text-sm md:text-base text-muted-foreground font-medium">
-          Ad Placeholder
-        </p>
-        <p className="text-xs text-muted-foreground/70 mt-1">
-          728x90 (Desktop) / 320x50 (Mobile)
-        </p>
-      </div>
 
       <Card>
         <CardHeader>
