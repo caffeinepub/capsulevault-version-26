@@ -1,6 +1,6 @@
-import { Heart } from 'lucide-react';
-import { OfficialLinkBanner } from './OfficialLinkBanner';
-import type { Page } from '../App';
+import { Heart } from "lucide-react";
+import type { Page } from "../App";
+import { OfficialLinkBanner } from "./OfficialLinkBanner";
 
 interface FooterProps {
   onNavigate: (page: Page) => void;
@@ -16,31 +16,34 @@ export function Footer({ onNavigate }: FooterProps) {
             <span>© 2025. Built with</span>
             <Heart className="w-4 h-4 text-primary fill-primary" />
             <span>using</span>
-            <a 
-              href="https://caffeine.ai" 
-              target="_blank" 
+            <a
+              href="https://caffeine.ai"
+              target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline font-medium"
             >
               caffeine.ai
             </a>
           </div>
-          
+
           <div className="flex items-center gap-4 text-sm">
             <button
-              onClick={() => onNavigate({ type: 'feedback' })}
+              type="button"
+              onClick={() => onNavigate({ type: "feedback" })}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               Feedback
             </button>
             <button
-              onClick={() => onNavigate({ type: 'safety-privacy' })}
+              type="button"
+              onClick={() => onNavigate({ type: "safety-privacy" })}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               Privacy & Safety
             </button>
             <button
-              onClick={() => onNavigate({ type: 'security' })}
+              type="button"
+              onClick={() => onNavigate({ type: "security" })}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               Security

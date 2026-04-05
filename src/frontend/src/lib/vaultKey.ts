@@ -1,13 +1,13 @@
 // Vault Key utilities
 
-const VAULT_KEY_STORAGE_KEY = 'capsuleVaultKey';
+const VAULT_KEY_STORAGE_KEY = "capsuleVaultKey";
 
 /**
  * Generate a random Vault Key in format VK-xxxxxxxx
  */
 export function generateVaultKey(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let key = 'VK-';
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let key = "VK-";
   for (let i = 0; i < 8; i++) {
     key += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -20,9 +20,9 @@ export function generateVaultKey(): string {
 export async function hashVaultKey(vaultKey: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(vaultKey);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 /**
@@ -30,12 +30,12 @@ export async function hashVaultKey(vaultKey: string): Promise<string> {
  */
 export function getOrCreateVaultKey(): string {
   let vaultKey = localStorage.getItem(VAULT_KEY_STORAGE_KEY);
-  
+
   if (!vaultKey) {
     vaultKey = generateVaultKey();
     localStorage.setItem(VAULT_KEY_STORAGE_KEY, vaultKey);
   }
-  
+
   return vaultKey;
 }
 

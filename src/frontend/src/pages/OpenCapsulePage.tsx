@@ -1,32 +1,38 @@
-import { useState } from 'react';
-import { ArrowLeft, Lock, Unlock, Clock, Shield } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Alert, AlertDescription } from '../components/ui/alert';
-import { ReminderToggle } from '../components/ReminderToggle';
-import { useGetCapsule, useCheckCapsuleExpiry } from '../hooks/useQueries';
-import { CountdownTimer } from '../components/CountdownTimer';
-import { toast } from 'sonner';
-import type { Page } from '../App';
+import { ArrowLeft, Clock, Lock, Shield, Unlock } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import type { Page } from "../App";
+import { CountdownTimer } from "../components/CountdownTimer";
+import { ReminderToggle } from "../components/ReminderToggle";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { useCheckCapsuleExpiry, useGetCapsule } from "../hooks/useQueries";
 
 interface OpenCapsulePageProps {
   onNavigate: (page: Page) => void;
 }
 
 export function OpenCapsulePage({ onNavigate }: OpenCapsulePageProps) {
-  const [claimCode, setClaimCode] = useState('');
+  const [claimCode, setClaimCode] = useState("");
   const [submittedCode, setSubmittedCode] = useState<string | null>(null);
 
-  const capsuleQuery = useGetCapsule(submittedCode || '');
-  const expiryQuery = useCheckCapsuleExpiry(submittedCode || '');
+  const capsuleQuery = useGetCapsule(submittedCode || "");
+  const expiryQuery = useCheckCapsuleExpiry(submittedCode || "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!claimCode.trim()) {
-      toast.error('Please enter a claim code');
+      toast.error("Please enter a claim code");
       return;
     }
 
@@ -37,7 +43,7 @@ export function OpenCapsulePage({ onNavigate }: OpenCapsulePageProps) {
 
   const handleUnlock = () => {
     if (capsuleQuery.data && expiryQuery.data) {
-      onNavigate({ type: 'view', capsule: capsuleQuery.data });
+      onNavigate({ type: "view", capsule: capsuleQuery.data });
     }
   };
 
@@ -47,17 +53,17 @@ export function OpenCapsulePage({ onNavigate }: OpenCapsulePageProps) {
   const capsule = capsuleQuery.data;
 
   // Check if error message indicates draft capsule
-  const isDraftCapsule = hasError && (
-    capsuleQuery.error?.message?.includes('draft version') ||
-    capsuleQuery.error?.message?.includes('not found in live storage')
-  );
+  const isDraftCapsule =
+    hasError &&
+    (capsuleQuery.error?.message?.includes("draft version") ||
+      capsuleQuery.error?.message?.includes("not found in live storage"));
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-2xl">
-      <Button 
-        variant="ghost" 
+      <Button
+        variant="ghost"
         className="mb-6"
-        onClick={() => onNavigate({ type: 'home' })}
+        onClick={() => onNavigate({ type: "home" })}
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Home
@@ -76,7 +82,8 @@ export function OpenCapsulePage({ onNavigate }: OpenCapsulePageProps) {
       <Alert className="mb-6 border-primary/50 bg-primary/5">
         <Shield className="h-4 w-4" />
         <AlertDescription className="text-sm">
-          <strong>Security reminder:</strong> CapsuleVault never unlocks capsules early and never asks for private codes.
+          <strong>Security reminder:</strong> CapsuleVault never unlocks
+          capsules early and never asks for private codes.
         </AlertDescription>
       </Alert>
 
@@ -127,9 +134,12 @@ export function OpenCapsulePage({ onNavigate }: OpenCapsulePageProps) {
                 <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
                   <Lock className="w-8 h-8 text-destructive" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Draft Capsule Detected</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Draft Capsule Detected
+                </h3>
                 <p className="text-muted-foreground mb-6">
-                  This capsule was created in a draft version. Please recreate it in the live app.
+                  This capsule was created in a draft version. Please recreate
+                  it in the live app.
                 </p>
                 <Button onClick={() => setSubmittedCode(null)}>
                   Try Another Code
@@ -144,16 +154,24 @@ export function OpenCapsulePage({ onNavigate }: OpenCapsulePageProps) {
                 <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
                   <Lock className="w-8 h-8 text-destructive" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Capsule Not Found</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Capsule Not Found
+                </h3>
                 <p className="text-muted-foreground mb-6">
-                  The claim code you entered doesn't match any capsule in live storage. Please check and try again.
+                  The claim code you entered doesn't match any capsule in live
+                  storage. Please check and try again.
                 </p>
                 <div className="text-left max-w-md mx-auto mb-6 bg-muted/50 rounded-lg p-4">
                   <p className="text-sm font-medium mb-2">Possible reasons:</p>
                   <ul className="text-sm text-muted-foreground space-y-1">
                     <li>• The claim code may be incorrect</li>
-                    <li>• The capsule may have been created in a draft/test environment</li>
-                    <li>• The capsule may not exist in the production database</li>
+                    <li>
+                      • The capsule may have been created in a draft/test
+                      environment
+                    </li>
+                    <li>
+                      • The capsule may not exist in the production database
+                    </li>
                   </ul>
                 </div>
                 <Button onClick={() => setSubmittedCode(null)}>
@@ -168,17 +186,34 @@ export function OpenCapsulePage({ onNavigate }: OpenCapsulePageProps) {
               <CardHeader>
                 <CardTitle>Capsule Locked</CardTitle>
                 <CardDescription>
-                  This capsule will unlock on {new Date(Number(capsule.metadata.unlockAt) / 1_000_000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })} at {new Date(Number(capsule.metadata.unlockAt) / 1_000_000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })} UTC
+                  This capsule will unlock on{" "}
+                  {new Date(
+                    Number(capsule.metadata.unlockAt) / 1_000_000,
+                  ).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}{" "}
+                  at{" "}
+                  {new Date(
+                    Number(capsule.metadata.unlockAt) / 1_000_000,
+                  ).toLocaleTimeString("en-GB", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: false,
+                  })}{" "}
+                  UTC
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-center py-8">
-                  <img 
-                    src="/assets/generated/hourglass-icon-transparent.dim_64x64.png" 
-                    alt="" 
+                  <img
+                    src="/assets/generated/hourglass-icon-transparent.dim_64x64.png"
+                    alt=""
                     className="w-16 h-16 mx-auto mb-6"
                   />
-                  <CountdownTimer 
+                  <CountdownTimer
                     targetTime={Number(capsule.metadata.unlockAt) / 1_000_000}
                     onComplete={() => expiryQuery.refetch()}
                   />
@@ -190,34 +225,48 @@ export function OpenCapsulePage({ onNavigate }: OpenCapsulePageProps) {
                     <Clock className="w-4 h-4 text-muted-foreground" />
                     <span>Time Information</span>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
                       <p className="text-muted-foreground mb-1">Created On</p>
                       <p className="font-medium">
-                        {capsule.metadata.createdAtTimestamp 
-                          ? capsule.metadata.createdAtTimestamp.date 
-                          : 'Unknown (legacy capsule)'}
+                        {capsule.metadata.createdAtTimestamp
+                          ? capsule.metadata.createdAtTimestamp.date
+                          : "Unknown (legacy capsule)"}
                       </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground mb-1">Created At</p>
                       <p className="font-medium">
-                        {capsule.metadata.createdAtTimestamp 
-                          ? `${capsule.metadata.createdAtTimestamp.time} ${capsule.metadata.createdAtTimestamp.timezone}` 
-                          : 'Unknown'}
+                        {capsule.metadata.createdAtTimestamp
+                          ? `${capsule.metadata.createdAtTimestamp.time} ${capsule.metadata.createdAtTimestamp.timezone}`
+                          : "Unknown"}
                       </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground mb-1">Unlock On</p>
                       <p className="font-medium">
-                        {new Date(Number(capsule.metadata.unlockAt) / 1_000_000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        {new Date(
+                          Number(capsule.metadata.unlockAt) / 1_000_000,
+                        ).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
                       </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground mb-1">Unlock At</p>
                       <p className="font-medium">
-                        {new Date(Number(capsule.metadata.unlockAt) / 1_000_000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })} UTC
+                        {new Date(
+                          Number(capsule.metadata.unlockAt) / 1_000_000,
+                        ).toLocaleTimeString("en-GB", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: false,
+                        })}{" "}
+                        UTC
                       </p>
                     </div>
                   </div>
@@ -233,12 +282,13 @@ export function OpenCapsulePage({ onNavigate }: OpenCapsulePageProps) {
 
                 <div className="bg-muted/50 rounded-lg p-4">
                   <p className="text-sm text-muted-foreground text-center">
-                    This capsule is time-locked. Come back after the unlock time to view its contents.
+                    This capsule is time-locked. Come back after the unlock time
+                    to view its contents.
                   </p>
                 </div>
 
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full"
                   onClick={() => setSubmittedCode(null)}
                 >
@@ -262,22 +312,24 @@ export function OpenCapsulePage({ onNavigate }: OpenCapsulePageProps) {
               <CardContent className="space-y-4">
                 <div className="text-center py-6">
                   <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    {capsule.metadata.capsuleType === 'love' ? (
-                      <img 
-                        src="/assets/generated/message-icon-transparent.dim_64x64.png" 
-                        alt="" 
+                    {capsule.metadata.capsuleType === "love" ? (
+                      <img
+                        src="/assets/generated/message-icon-transparent.dim_64x64.png"
+                        alt=""
                         className="w-12 h-12"
                       />
                     ) : (
-                      <img 
-                        src="/assets/generated/prediction-icon-transparent.dim_64x64.png" 
-                        alt="" 
+                      <img
+                        src="/assets/generated/prediction-icon-transparent.dim_64x64.png"
+                        alt=""
                         className="w-12 h-12"
                       />
                     )}
                   </div>
                   <p className="text-lg font-medium mb-2">
-                    {capsule.metadata.capsuleType === 'love' ? 'Message Capsule' : 'Prediction Capsule'}
+                    {capsule.metadata.capsuleType === "love"
+                      ? "Message Capsule"
+                      : "Prediction Capsule"}
                   </p>
                 </div>
 
@@ -287,34 +339,48 @@ export function OpenCapsulePage({ onNavigate }: OpenCapsulePageProps) {
                     <Clock className="w-4 h-4 text-muted-foreground" />
                     <span>Verification Details</span>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
                       <p className="text-muted-foreground mb-1">Created On</p>
                       <p className="font-medium">
-                        {capsule.metadata.createdAtTimestamp 
-                          ? capsule.metadata.createdAtTimestamp.date 
-                          : 'Unknown (legacy capsule)'}
+                        {capsule.metadata.createdAtTimestamp
+                          ? capsule.metadata.createdAtTimestamp.date
+                          : "Unknown (legacy capsule)"}
                       </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground mb-1">Created At</p>
                       <p className="font-medium">
-                        {capsule.metadata.createdAtTimestamp 
-                          ? `${capsule.metadata.createdAtTimestamp.time} ${capsule.metadata.createdAtTimestamp.timezone}` 
-                          : 'Unknown'}
+                        {capsule.metadata.createdAtTimestamp
+                          ? `${capsule.metadata.createdAtTimestamp.time} ${capsule.metadata.createdAtTimestamp.timezone}`
+                          : "Unknown"}
                       </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground mb-1">Unlock On</p>
                       <p className="font-medium">
-                        {new Date(Number(capsule.metadata.unlockAt) / 1_000_000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        {new Date(
+                          Number(capsule.metadata.unlockAt) / 1_000_000,
+                        ).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
                       </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground mb-1">Unlock At</p>
                       <p className="font-medium">
-                        {new Date(Number(capsule.metadata.unlockAt) / 1_000_000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })} UTC
+                        {new Date(
+                          Number(capsule.metadata.unlockAt) / 1_000_000,
+                        ).toLocaleTimeString("en-GB", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: false,
+                        })}{" "}
+                        UTC
                       </p>
                     </div>
                   </div>
@@ -322,26 +388,34 @@ export function OpenCapsulePage({ onNavigate }: OpenCapsulePageProps) {
                   <div className="pt-2 border-t border-border space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Claim Code</span>
-                      <code className="font-mono font-medium">{capsule.metadata.claimCode}</code>
+                      <code className="font-mono font-medium">
+                        {capsule.metadata.claimCode}
+                      </code>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Capsule Type</span>
-                      <span className="font-medium capitalize">{capsule.metadata.capsuleType}</span>
+                      <span className="text-muted-foreground">
+                        Capsule Type
+                      </span>
+                      <span className="font-medium capitalize">
+                        {capsule.metadata.capsuleType}
+                      </span>
                     </div>
-                    {capsule.content.__kind__ === 'predictionCapsule' && (
+                    {capsule.content.__kind__ === "predictionCapsule" && (
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Commit ID</span>
-                        <code className="font-mono text-xs">{capsule.content.predictionCapsule.commitId.slice(0, 12)}...</code>
+                        <code className="font-mono text-xs">
+                          {capsule.content.predictionCapsule.commitId.slice(
+                            0,
+                            12,
+                          )}
+                          ...
+                        </code>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <Button 
-                  className="w-full" 
-                  size="lg"
-                  onClick={handleUnlock}
-                >
+                <Button className="w-full" size="lg" onClick={handleUnlock}>
                   <Unlock className="w-4 h-4 mr-2" />
                   Open Capsule
                 </Button>

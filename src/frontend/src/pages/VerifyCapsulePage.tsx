@@ -1,40 +1,50 @@
-import { useState } from 'react';
-import { Shield, CheckCircle, XCircle, Search } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Alert, AlertDescription } from '../components/ui/alert';
-import { useGetCapsule } from '../hooks/useQueries';
-import { toast } from 'sonner';
-import type { Page } from '../App';
+import { CheckCircle, Search, Shield, XCircle } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import type { Page } from "../App";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { useGetCapsule } from "../hooks/useQueries";
 
 interface VerifyCapsulePageProps {
   onNavigate: (page: Page) => void;
 }
 
-export function VerifyCapsulePage({ onNavigate }: VerifyCapsulePageProps) {
-  const [claimCode, setClaimCode] = useState('');
-  const [submittedClaimCode, setSubmittedClaimCode] = useState<string | null>(null);
+export function VerifyCapsulePage({
+  onNavigate: _onNavigate,
+}: VerifyCapsulePageProps) {
+  const [claimCode, setClaimCode] = useState("");
+  const [submittedClaimCode, setSubmittedClaimCode] = useState<string | null>(
+    null,
+  );
 
-  const capsuleQuery = useGetCapsule(submittedClaimCode || '');
+  const capsuleQuery = useGetCapsule(submittedClaimCode || "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!claimCode.trim()) {
-      toast.error('Please enter a claim code');
+      toast.error("Please enter a claim code");
       return;
     }
 
     // Normalize: trim whitespace and convert to uppercase
     const normalized = claimCode.trim().toUpperCase();
-    
+
     setSubmittedClaimCode(normalized);
   };
 
   const handleReset = () => {
-    setClaimCode('');
+    setClaimCode("");
     setSubmittedClaimCode(null);
   };
 
@@ -75,13 +85,18 @@ export function VerifyCapsulePage({ onNavigate }: VerifyCapsulePageProps) {
 
     // Format unlock date/time
     const unlockDate = new Date(Number(capsule.metadata.unlockAt) / 1_000_000);
-    const unlockDateStr = unlockDate.toLocaleDateString('en-GB');
-    const unlockTimeStr = unlockDate.toLocaleTimeString('en-GB', { hour12: false });
+    const unlockDateStr = unlockDate.toLocaleDateString("en-GB");
+    const unlockTimeStr = unlockDate.toLocaleTimeString("en-GB", {
+      hour12: false,
+    });
 
     // Extract creation timestamp
     const createdAtTimestamp = capsule.metadata.createdAtTimestamp;
-    const createdDateStr = createdAtTimestamp?.date || 'Unknown (legacy capsule)';
-    const createdTimeStr = createdAtTimestamp?.time ? `${createdAtTimestamp.time} UTC` : 'Unknown';
+    const createdDateStr =
+      createdAtTimestamp?.date || "Unknown (legacy capsule)";
+    const createdTimeStr = createdAtTimestamp?.time
+      ? `${createdAtTimestamp.time} UTC`
+      : "Unknown";
 
     return (
       <Card className="border-primary/50 bg-primary/5">
@@ -97,7 +112,9 @@ export function VerifyCapsulePage({ onNavigate }: VerifyCapsulePageProps) {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Claim Code:</span>
-                <code className="font-mono font-medium text-base">{submittedClaimCode}</code>
+                <code className="font-mono font-medium text-base">
+                  {submittedClaimCode}
+                </code>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Created On:</span>
@@ -182,8 +199,9 @@ export function VerifyCapsulePage({ onNavigate }: VerifyCapsulePageProps) {
       <Alert className="mt-6">
         <Shield className="h-4 w-4" />
         <AlertDescription>
-          <strong>Why verify?</strong> Verification confirms that a capsule was created on the official CapsuleVault site 
-          and hasn't been tampered with. This helps protect against fake sites and impersonation.
+          <strong>Why verify?</strong> Verification confirms that a capsule was
+          created on the official CapsuleVault site and hasn't been tampered
+          with. This helps protect against fake sites and impersonation.
         </AlertDescription>
       </Alert>
 
@@ -204,11 +222,16 @@ export function VerifyCapsulePage({ onNavigate }: VerifyCapsulePageProps) {
             </li>
             <li className="flex gap-2">
               <span>•</span>
-              <span>Check that you're on the official site: https://capsulevault-1ie.caffeine.xyz/</span>
+              <span>
+                Check that you're on the official site:
+                https://capsulevault-1ie.caffeine.xyz/
+              </span>
             </li>
             <li className="flex gap-2">
               <span>•</span>
-              <span>Fake sites cannot replicate authentic verification stamps</span>
+              <span>
+                Fake sites cannot replicate authentic verification stamps
+              </span>
             </li>
           </ul>
         </CardContent>

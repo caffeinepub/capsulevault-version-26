@@ -1,18 +1,21 @@
-import { AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from './ui/alert';
-import { useEffect } from 'react';
+import { AlertCircle } from "lucide-react";
+import { useEffect } from "react";
+import { Alert, AlertDescription } from "./ui/alert";
 
 interface BackendHealthBannerProps {
   isHealthy: boolean | undefined;
   isLoading: boolean;
 }
 
-export function BackendHealthBanner({ isHealthy, isLoading }: BackendHealthBannerProps) {
+export function BackendHealthBanner({
+  isHealthy,
+  isLoading,
+}: BackendHealthBannerProps) {
   useEffect(() => {
-    console.log('[DIAGNOSTIC] BackendHealthBanner state:', {
+    console.log("[DIAGNOSTIC] BackendHealthBanner state:", {
       isHealthy,
       isLoading,
-      shouldShowBanner: !isLoading && isHealthy === false
+      shouldShowBanner: !isLoading && isHealthy === false,
     });
   }, [isHealthy, isLoading]);
 
@@ -23,7 +26,7 @@ export function BackendHealthBanner({ isHealthy, isLoading }: BackendHealthBanne
     return null;
   }
 
-  console.log('[DIAGNOSTIC] Displaying storage offline banner');
+  console.log("[DIAGNOSTIC] Displaying storage offline banner");
 
   return (
     <Alert variant="destructive" className="mb-6 mx-4 mt-4">

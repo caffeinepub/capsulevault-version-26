@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { Copy, Check, Shield } from 'lucide-react';
-import { Button } from './ui/button';
-import { toast } from 'sonner';
+import { Check, Copy, Shield } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Button } from "./ui/button";
 
-const OFFICIAL_URL = 'https://capsulevault-1ie.caffeine.xyz/';
+const OFFICIAL_URL = "https://capsulevault-1ie.caffeine.xyz/";
 
 export function OfficialLinkBanner() {
   const [copied, setCopied] = useState(false);
@@ -12,10 +12,10 @@ export function OfficialLinkBanner() {
     try {
       await navigator.clipboard.writeText(OFFICIAL_URL);
       setCopied(true);
-      toast.success('Official link copied!');
+      toast.success("Official link copied!");
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      toast.error('Failed to copy link');
+    } catch (_error) {
+      toast.error("Failed to copy link");
     }
   };
 
@@ -25,7 +25,9 @@ export function OfficialLinkBanner() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm">
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-primary flex-shrink-0" />
-            <span className="text-muted-foreground">Official CapsuleVault link:</span>
+            <span className="text-muted-foreground">
+              Official LockLetter link:
+            </span>
           </div>
           <code className="font-mono font-semibold text-primary break-all text-center sm:text-left">
             {OFFICIAL_URL}

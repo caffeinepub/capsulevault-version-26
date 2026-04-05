@@ -1,7 +1,13 @@
-import { Lightbulb, Lock, Clock, Heart, Mail } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import type { Page } from '../App';
+import { Clock, Heart, Lightbulb, Lock } from "lucide-react";
+import type { Page } from "../App";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 
 interface HomePageProps {
   onNavigate: (page: Page) => void;
@@ -13,17 +19,17 @@ export function HomePage({ onNavigate }: HomePageProps) {
       {/* Hero Section */}
       <div className="text-center mb-16 relative">
         <div className="absolute inset-0 -z-10 opacity-30">
-          <img 
-            src="/assets/generated/hero-background.dim_1200x800.png" 
-            alt="" 
+          <img
+            src="/assets/generated/hero-background.dim_1200x800.png"
+            alt=""
             className="w-full h-full object-cover rounded-3xl"
           />
         </div>
         <div className="py-16 px-4">
           <div className="inline-flex items-center gap-2 mb-6">
-            <img 
-              src="/assets/generated/hourglass-icon-transparent.dim_64x64.png" 
-              alt="" 
+            <img
+              src="/assets/generated/hourglass-icon-transparent.dim_64x64.png"
+              alt=""
               className="w-12 h-12"
             />
           </div>
@@ -33,21 +39,21 @@ export function HomePage({ onNavigate }: HomePageProps) {
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             Create a time-locked capsule that opens on a date you choose.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="text-lg px-8"
-              onClick={() => onNavigate({ type: 'create' })}
+              onClick={() => onNavigate({ type: "create" })}
             >
               <Lock className="w-5 h-5 mr-2" />
               Create Capsule
             </Button>
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               variant="outline"
               className="text-lg px-8"
-              onClick={() => onNavigate({ type: 'open' })}
+              onClick={() => onNavigate({ type: "open" })}
             >
               <Clock className="w-5 h-5 mr-2" />
               Open Capsule
@@ -56,20 +62,17 @@ export function HomePage({ onNavigate }: HomePageProps) {
         </div>
       </div>
 
-      {/* AdSense Placeholder - Top */}
-      <div className="mb-12 p-6 md:p-8 border-2 border-dashed border-muted-foreground/30 rounded-lg bg-muted/20 text-center">
-        <p className="text-sm md:text-base text-muted-foreground font-medium">Ad Placeholder</p>
-        <p className="text-xs text-muted-foreground/70 mt-1">728x90 (Desktop) / 320x50 (Mobile)</p>
-      </div>
-
       {/* Capsule Types */}
       <div className="grid md:grid-cols-2 gap-6 mb-16">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-primary/50" onClick={() => onNavigate({ type: 'create', capsuleType: 'love' })}>
+        <Card
+          className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-primary/50"
+          onClick={() => onNavigate({ type: "create", capsuleType: "love" })}
+        >
           <CardHeader>
             <div className="flex items-center gap-3 mb-2">
-              <img 
-                src="/assets/generated/message-icon-transparent.dim_64x64.png" 
-                alt="" 
+              <img
+                src="/assets/generated/message-icon-transparent.dim_64x64.png"
+                alt=""
                 className="w-10 h-10"
               />
               <CardTitle className="text-2xl">Message Capsule</CardTitle>
@@ -96,12 +99,17 @@ export function HomePage({ onNavigate }: HomePageProps) {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-primary/50" onClick={() => onNavigate({ type: 'create', capsuleType: 'prediction' })}>
+        <Card
+          className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-primary/50"
+          onClick={() =>
+            onNavigate({ type: "create", capsuleType: "prediction" })
+          }
+        >
           <CardHeader>
             <div className="flex items-center gap-3 mb-2">
-              <img 
-                src="/assets/generated/prediction-icon-transparent.dim_64x64.png" 
-                alt="" 
+              <img
+                src="/assets/generated/prediction-icon-transparent.dim_64x64.png"
+                alt=""
                 className="w-10 h-10"
               />
               <CardTitle className="text-2xl">Prediction Capsule</CardTitle>
@@ -114,7 +122,8 @@ export function HomePage({ onNavigate }: HomePageProps) {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                Choose a prediction type (statement, sports winner, numeric goal)
+                Choose a prediction type (statement, sports winner, numeric
+                goal)
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
@@ -130,7 +139,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
       </div>
 
       {/* Features */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="text-center p-6">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
             <Lock className="w-6 h-6 text-primary" />
@@ -140,12 +149,12 @@ export function HomePage({ onNavigate }: HomePageProps) {
             Messages unlock only after your chosen date
           </p>
         </div>
-        
+
         <div className="text-center p-6">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <img 
-              src="/assets/generated/lock-key-icon-transparent.dim_64x64.png" 
-              alt="" 
+            <img
+              src="/assets/generated/lock-key-icon-transparent.dim_64x64.png"
+              alt=""
               className="w-6 h-6"
             />
           </div>
@@ -154,7 +163,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
             No accounts, no tracking, claim codes only
           </p>
         </div>
-        
+
         <div className="text-center p-6">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
             <Heart className="w-6 h-6 text-primary" />
@@ -164,7 +173,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
             Create lasting memories and predictions
           </p>
         </div>
-        
+
         <div className="text-center p-6">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
             <Lightbulb className="w-6 h-6 text-primary" />
@@ -174,12 +183,6 @@ export function HomePage({ onNavigate }: HomePageProps) {
             No registration required, just create and share
           </p>
         </div>
-      </div>
-
-      {/* AdSense Placeholder - Bottom */}
-      <div className="p-6 md:p-8 border-2 border-dashed border-muted-foreground/30 rounded-lg bg-muted/20 text-center">
-        <p className="text-sm md:text-base text-muted-foreground font-medium">Ad Placeholder</p>
-        <p className="text-xs text-muted-foreground/70 mt-1">300x250 (Mobile) / 728x90 (Desktop)</p>
       </div>
     </div>
   );

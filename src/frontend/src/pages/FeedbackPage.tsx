@@ -1,44 +1,54 @@
-import { useState } from 'react';
-import { Button } from '../components/ui/button';
-import { Textarea } from '../components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Alert, AlertDescription } from '../components/ui/alert';
-import { Loader2, MessageSquare, Send } from 'lucide-react';
-import { useSubmitFeedback, useGetAllFeedback } from '../hooks/useQueries';
-import { Variant_pending_approved_rejected } from '../backend';
-import { toast } from 'sonner';
-import type { Page } from '../App';
+import { Loader2, MessageSquare, Send } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import type { Page } from "../App";
+import { Variant_pending_approved_rejected } from "../backend";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Textarea } from "../components/ui/textarea";
+import { useGetAllFeedback, useSubmitFeedback } from "../hooks/useQueries";
 
 interface FeedbackPageProps {
   onNavigate: (page: Page) => void;
 }
 
-export function FeedbackPage({ onNavigate }: FeedbackPageProps) {
-  const [comment, setComment] = useState('');
+export function FeedbackPage({ onNavigate: _onNavigate }: FeedbackPageProps) {
+  const [comment, setComment] = useState("");
   const [lastSubmitTime, setLastSubmitTime] = useState<number>(0);
-  
+
   const submitFeedback = useSubmitFeedback();
-  const { data: allFeedback, isLoading: isLoadingFeedback, refetch } = useGetAllFeedback();
+  const {
+    data: allFeedback,
+    isLoading: isLoadingFeedback,
+    refetch,
+  } = useGetAllFeedback();
 
   // Generate a simple device ID from browser fingerprint
   const getDeviceId = () => {
-    const stored = localStorage.getItem('capsule-device-id');
+    const stored = localStorage.getItem("capsule-device-id");
     if (stored) return stored;
-    
+
     const newId = `device_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    localStorage.setItem('capsule-device-id', newId);
+    localStorage.setItem("capsule-device-id", newId);
     return newId;
   };
 
   const handleSubmit = async () => {
     // Validate comment
     if (!comment.trim()) {
-      toast.error('Please enter a comment');
+      toast.error("Please enter a comment");
       return;
     }
 
     if (comment.length > 250) {
-      toast.error('Comment must be 250 characters or less');
+      toast.error("Comment must be 250 characters or less");
       return;
     }
 
@@ -48,41 +58,48 @@ export function FeedbackPage({ onNavigate }: FeedbackPageProps) {
     const oneMinute = 60 * 1000;
 
     if (timeSinceLastSubmit < oneMinute) {
-      const secondsRemaining = Math.ceil((oneMinute - timeSinceLastSubmit) / 1000);
-      toast.error(`Please wait ${secondsRemaining} seconds before submitting again`);
+      const secondsRemaining = Math.ceil(
+        (oneMinute - timeSinceLastSubmit) / 1000,
+      );
+      toast.error(
+        `Please wait ${secondsRemaining} seconds before submitting again`,
+      );
       return;
     }
 
     try {
       const deviceId = getDeviceId();
       await submitFeedback.mutateAsync({ deviceId, comment });
-      
-      toast.success('Feedback submitted successfully!');
-      setComment('');
+
+      toast.success("Feedback submitted successfully!");
+      setComment("");
       setLastSubmitTime(now);
-      
+
       // Refetch feedback list
       refetch();
     } catch (error) {
-      console.error('Failed to submit feedback:', error);
-      toast.error('Failed to submit feedback. Please try again.');
+      console.error("Failed to submit feedback:", error);
+      toast.error("Failed to submit feedback. Please try again.");
     }
   };
 
   const formatTimestamp = (timestamp: bigint) => {
     const date = new Date(Number(timestamp) / 1_000_000);
-    return date.toLocaleString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
+    return date.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
     });
   };
 
   // Filter approved feedback only
-  const approvedFeedback = allFeedback?.filter(f => f.approvalStatus === Variant_pending_approved_rejected.approved) || [];
+  const approvedFeedback =
+    allFeedback?.filter(
+      (f) => f.approvalStatus === Variant_pending_approved_rejected.approved,
+    ) || [];
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -105,7 +122,8 @@ export function FeedbackPage({ onNavigate }: FeedbackPageProps) {
               Submit Feedback
             </CardTitle>
             <CardDescription>
-              Your feedback helps us make CapsuleVault better. Maximum 250 characters.
+              Your feedback helps us make CapsuleVault better. Maximum 250
+              characters.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -125,7 +143,8 @@ export function FeedbackPage({ onNavigate }: FeedbackPageProps) {
 
             <Alert>
               <AlertDescription>
-                Feedback is public and anonymous. Please don't include personal information.
+                Feedback is public and anonymous. Please don't include personal
+                information.
               </AlertDescription>
             </Alert>
 

@@ -1,100 +1,95 @@
-import { useEffect, useState } from 'react';
-import { AlertTriangle, ExternalLink } from 'lucide-react';
-import { Button } from './ui/button';
+import { AlertTriangle, ExternalLink, Shield } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Button } from "./ui/button";
 
-const OFFICIAL_DOMAIN = 'capsulevault-1ie.caffeine.xyz';
-const ALLOWED_DOMAINS = [
-  'capsulevault-1ie.caffeine.xyz',
-  'localhost',
-  '127.0.0.1'
-];
+const OFFICIAL_DOMAIN = "capsulevault-1ie.caffeine.xyz";
+const OFFICIAL_URL = `https://${OFFICIAL_DOMAIN}/`;
 
 export function DomainVerification() {
-  const [showWarning, setShowWarning] = useState(false);
-  const [redirectAttempted, setRedirectAttempted] = useState(false);
+  const [isOfficial, setIsOfficial] = useState(true);
+  const [currentDomain, setCurrentDomain] = useState("");
+  const [attemptedRedirect, setAttemptedRedirect] = useState(false);
 
   useEffect(() => {
     const hostname = window.location.hostname;
-    
-    // Check if domain is allowed
-    const isAllowed = ALLOWED_DOMAINS.some(domain => 
-      hostname === domain || hostname.endsWith('.caffeine.ai')
-    );
+    setCurrentDomain(hostname);
 
-    if (!isAllowed && !redirectAttempted) {
-      // Attempt auto-redirect
-      setRedirectAttempted(true);
-      const currentPath = window.location.pathname + window.location.search + window.location.hash;
-      const officialUrl = `https://${OFFICIAL_DOMAIN}${currentPath}`;
-      
-      try {
-        window.location.replace(officialUrl);
-      } catch (error) {
-        // Redirect failed, show warning
-        setShowWarning(true);
-      }
-      
-      // Fallback: show warning after short delay if redirect didn't work
+    // Check if on official domain
+    const official = hostname === OFFICIAL_DOMAIN || hostname === "localhost";
+    setIsOfficial(official);
+
+    // Attempt auto-redirect once if not on official domain
+    if (!official && !attemptedRedirect && hostname !== "localhost") {
+      setAttemptedRedirect(true);
+      // Give user 3 seconds to see the warning before redirect
       setTimeout(() => {
-        setShowWarning(true);
-      }, 1000);
+        window.location.href = OFFICIAL_URL;
+      }, 3000);
     }
-  }, [redirectAttempted]);
+  }, [attemptedRedirect]);
 
-  if (!showWarning) {
+  if (isOfficial) {
     return null;
   }
 
-  const handleGoToOfficial = () => {
-    const currentPath = window.location.pathname + window.location.search + window.location.hash;
-    window.location.href = `https://${OFFICIAL_DOMAIN}${currentPath}`;
-  };
-
   return (
-    <div className="fixed inset-0 z-[9999] bg-background flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full bg-card border-2 border-destructive rounded-lg shadow-2xl">
-        <div className="p-8 space-y-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
-              <AlertTriangle className="w-8 h-8 text-destructive" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-destructive mb-1">Security Warning</h1>
-              <p className="text-sm text-muted-foreground">Unauthorized domain detected</p>
-            </div>
-          </div>
+    <div className="fixed inset-0 z-[100] bg-background flex items-center justify-center p-4">
+      <div className="max-w-md w-full space-y-6 text-center">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-destructive/10 mb-4">
+          <AlertTriangle className="w-10 h-10 text-destructive" />
+        </div>
 
-          <div className="space-y-4 text-base">
-            <p className="font-semibold">
-              This is NOT the official CapsuleVault site.
-            </p>
-            <p>
-              Only use CapsuleVault at:
-            </p>
-            <div className="bg-muted p-4 rounded-lg">
-              <code className="text-lg font-mono font-bold text-primary break-all">
-                https://{OFFICIAL_DOMAIN}/
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold text-destructive">
+            Unauthorized Domain
+          </h1>
+          <p className="text-muted-foreground">
+            You are not on the official LockLetter website.
+          </p>
+        </div>
+
+        <div className="bg-muted p-4 rounded-lg space-y-3 text-left">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="font-semibold text-sm">Current domain:</p>
+              <code className="text-xs block bg-background px-2 py-1 rounded border border-destructive/20">
+                {currentDomain}
               </code>
             </div>
-            <p className="text-destructive font-medium">
-              If you are on any other address, it may be impersonating the real app.
-            </p>
           </div>
 
-          <div className="space-y-3 pt-4">
-            <Button 
-              className="w-full" 
-              size="lg"
-              onClick={handleGoToOfficial}
-            >
-              <ExternalLink className="w-5 h-5 mr-2" />
-              Go to Official Site
-            </Button>
-            <p className="text-xs text-center text-muted-foreground">
-              For your security, do not create or open capsules on this site.
-            </p>
+          <div className="flex items-start gap-2">
+            <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="font-semibold text-sm">Official domain:</p>
+              <code className="text-xs block bg-background px-2 py-1 rounded border border-primary/20">
+                {OFFICIAL_DOMAIN}
+              </code>
+            </div>
           </div>
         </div>
+
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Redirecting to official site in 3 seconds...
+          </p>
+          <Button
+            size="lg"
+            className="w-full"
+            onClick={() => {
+              window.location.href = OFFICIAL_URL;
+            }}
+          >
+            <ExternalLink className="w-4 h-4 mr-2" />
+            Go to Official LockLetter Site
+          </Button>
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          Always verify the URL before entering claim codes or creating
+          capsules.
+        </p>
       </div>
     </div>
   );

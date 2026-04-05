@@ -1,257 +1,205 @@
-import { Shield, Eye, AlertTriangle, Copy, Check, QrCode } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { toast } from 'sonner';
-import type { Page } from '../App';
+import { AlertTriangle, Check, Copy, Eye, QrCode, Shield } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import type { Page } from "../App";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 
 interface SecurityPageProps {
   onNavigate: (page: Page) => void;
 }
 
-const OFFICIAL_URL = 'https://capsulevault-1ie.caffeine.xyz/';
+const OFFICIAL_URL = "https://capsulevault-1ie.caffeine.xyz/";
 
-export function SecurityPage({ onNavigate }: SecurityPageProps) {
-  const [copied, setCopied] = useState(false);
+export function SecurityPage({ onNavigate: _onNavigate }: SecurityPageProps) {
+  const [copiedUrl, setCopiedUrl] = useState(false);
 
-  const handleCopy = async () => {
+  const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(OFFICIAL_URL);
-      setCopied(true);
-      toast.success('Official link copied!');
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      toast.error('Failed to copy link');
+      setCopiedUrl(true);
+      toast.success("Official URL copied!");
+      setTimeout(() => setCopiedUrl(false), 2000);
+    } catch (_error) {
+      toast.error("Failed to copy URL");
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Security</h1>
-        <p className="text-muted-foreground">
-          Protect yourself from fake sites and impersonation
+      <div className="text-center mb-12">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+          <Shield className="w-8 h-8 text-primary" />
+        </div>
+        <h1 className="text-3xl md:text-4xl font-bold mb-4">
+          Security & Verification
+        </h1>
+        <p className="text-muted-foreground text-lg">
+          How to verify you're using the official LockLetter site
         </p>
       </div>
 
       <div className="space-y-6">
-        <Card className="border-primary/50">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <CardTitle>Official CapsuleVault Site</CardTitle>
-                <CardDescription>The only legitimate URL</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm">
-              The only official URL for CapsuleVault is:
-            </p>
-            <div className="bg-muted p-4 rounded-lg flex items-center justify-between gap-4">
-              <code className="font-mono font-bold text-primary break-all flex-1">
-                {OFFICIAL_URL}
-              </code>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleCopy}
-                className="flex-shrink-0"
-              >
-                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              </Button>
-            </div>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>Always check the address bar to confirm you're on the official site</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>Do not trust screenshots or forwarded links</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>Manually type or bookmark the official URL for safety</span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
-
+        {/* Official Domain */}
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Eye className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <CardTitle>How to Verify</CardTitle>
-                <CardDescription>Check before you create or open capsules</CardDescription>
-              </div>
-            </div>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-primary" />
+              Official Domain
+            </CardTitle>
+            <CardDescription>
+              Always verify you're on the correct website
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-semibold mb-2 text-sm">1. Look at your browser's address bar</h4>
-                <p className="text-sm text-muted-foreground">
-                  The URL should start with exactly:
-                </p>
-                <code className="block mt-2 p-3 bg-muted rounded text-sm font-mono">
-                  https://capsulevault-1ie.caffeine.xyz/
+            <div className="bg-muted p-4 rounded-lg">
+              <p className="text-sm text-muted-foreground mb-2">
+                Official LockLetter URL:
+              </p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <code className="flex-1 font-mono text-sm bg-background px-3 py-2 rounded border">
+                  {OFFICIAL_URL}
                 </code>
+                <Button variant="outline" size="sm" onClick={handleCopyUrl}>
+                  {copiedUrl ? (
+                    <>
+                      <Check className="w-4 h-4 mr-1.5" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4 mr-1.5" />
+                      Copy
+                    </>
+                  )}
+                </Button>
               </div>
+            </div>
 
-              <div>
-                <h4 className="font-semibold mb-2 text-sm">2. Check for the secure connection icon</h4>
+            <div className="flex items-start gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+              <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-semibold text-sm">Beware of Impersonators</p>
                 <p className="text-sm text-muted-foreground">
-                  Look for the padlock icon (🔒) in your browser's address bar, indicating a secure HTTPS connection.
+                  If the URL in your browser doesn't match exactly, you may be
+                  on a fake site. Close the tab immediately.
                 </p>
               </div>
-
-              <div>
-                <h4 className="font-semibold mb-2 text-sm">3. If you see any other address</h4>
-                <p className="text-sm text-muted-foreground">
-                  You may be on a fake site. Close the tab immediately and navigate directly to the official URL.
-                </p>
-              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-primary/50 bg-primary/5">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <CardTitle>Verification Stamps</CardTitle>
-                <CardDescription>How to identify authentic capsules</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm">
-              Legitimate capsules display a "Verified by CapsuleVault" badge when unlocked:
-            </p>
-            <div className="bg-background p-4 rounded-lg flex items-center justify-center">
-              <img 
-                src="/assets/generated/verified-badge-transparent.dim_64x64.png" 
-                alt="Verified badge" 
-                className="w-16 h-16"
-              />
-            </div>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>The badge includes the official domain and integrity verification</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>Fake sites cannot replicate authentic verification stamps</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>Use the "Verify Capsule" page to confirm authenticity</span>
-              </li>
-            </ul>
-            <Button 
-              variant="outline" 
-              className="w-full"
-              onClick={() => onNavigate({ type: 'verify' })}
-            >
-              Go to Capsule Verification
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="border-destructive/50 bg-destructive/5">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5 text-destructive" />
-              </div>
-              <div>
-                <CardTitle>Stay Safe</CardTitle>
-                <CardDescription>Protect your capsules from impersonation</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-destructive mt-2" />
-                <span>Only create and open capsules on the official site</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-destructive mt-2" />
-                <span>Fake sites may steal your claim codes or show false content</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-destructive mt-2" />
-                <span><strong>CapsuleVault never unlocks capsules early</strong> and never asks for private codes</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-destructive mt-2" />
-                <span>When in doubt, navigate directly to the official URL</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-destructive mt-2" />
-                <span>Never enter your Vault Key or claim codes on suspicious sites</span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
-
+        {/* QR Code */}
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <QrCode className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <CardTitle>Official Link Verification</CardTitle>
-                <CardDescription>Easy sharing and mobile access</CardDescription>
-              </div>
-            </div>
+            <CardTitle className="flex items-center gap-2">
+              <QrCode className="w-5 h-5 text-primary" />
+              Official QR Code
+            </CardTitle>
+            <CardDescription>
+              Scan this code to visit the official site
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Scan this QR code to visit the official site on your mobile device:
-            </p>
-            <div className="bg-white p-4 rounded-lg inline-block">
-              <img 
-                src="/assets/generated/qr-code-official-site.dim_200x200.png" 
-                alt="QR code for official CapsuleVault site"
-                className="w-48 h-48"
-              />
-            </div>
-            <div className="pt-4">
-              <Button onClick={handleCopy} variant="outline" className="w-full">
-                <Copy className="w-4 h-4 mr-2" />
-                {copied ? 'Copied!' : 'Copy Official Link'}
-              </Button>
+          <CardContent>
+            <div className="flex flex-col items-center gap-4">
+              <div className="bg-white p-4 rounded-lg border-2 border-primary/20">
+                <img
+                  src="/assets/generated/qr-code-official-site.dim_200x200.png"
+                  alt="Official LockLetter QR Code"
+                  className="w-48 h-48"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground text-center">
+                This QR code links to:{" "}
+                <code className="text-xs">{OFFICIAL_URL}</code>
+              </p>
             </div>
           </CardContent>
         </Card>
 
-        <div className="bg-muted/50 rounded-lg p-6">
-          <h3 className="font-semibold mb-3 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-primary" />
-            Bookmark the Official Site
-          </h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Save the official URL in your browser's bookmarks to ensure you always access the legitimate CapsuleVault site.
-          </p>
-          <Button onClick={handleCopy} variant="outline">
-            <Copy className="w-4 h-4 mr-2" />
-            {copied ? 'Copied!' : 'Copy Official Link'}
-          </Button>
-        </div>
+        {/* Verification Stamps */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Eye className="w-5 h-5 text-primary" />
+              Verification Stamps
+            </CardTitle>
+            <CardDescription>
+              Look for these indicators on capsules
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Shield className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm mb-1">Verified Badge</p>
+                  <p className="text-sm text-muted-foreground">
+                    Capsules created on the official site display a "Verified by
+                    LockLetter" badge with an integrity hash.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Check className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm mb-1">
+                    Commit ID (Predictions)
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Prediction capsules include a Commit ID that proves the
+                    prediction wasn't changed after creation.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Safety Tips */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-primary" />
+              Safety Recommendations
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-start gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                <span>Always check the URL before entering claim codes</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                <span>Bookmark the official site to avoid typos</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                <span>
+                  Never share your claim codes on public forums or social media
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                <span>
+                  If something feels suspicious, verify the domain first
+                </span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

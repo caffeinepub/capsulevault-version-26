@@ -1,127 +1,116 @@
-import { ArrowLeft, Shield, AlertTriangle, Lock } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import type { Page } from '../App';
+import { AlertCircle, Lock, Shield } from "lucide-react";
+import type { Page } from "../App";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 
 interface SafetyPrivacyPageProps {
   onNavigate: (page: Page) => void;
 }
 
-export function SafetyPrivacyPage({ onNavigate }: SafetyPrivacyPageProps) {
+export function SafetyPrivacyPage({
+  onNavigate: _onNavigate,
+}: SafetyPrivacyPageProps) {
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <Button 
-        variant="ghost" 
-        className="mb-6"
-        onClick={() => onNavigate({ type: 'home' })}
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Home
-      </Button>
-
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Safety & Privacy</h1>
-        <p className="text-muted-foreground">
-          How CapsuleVault works and what you should know
+      <div className="text-center mb-12">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+          <Shield className="w-8 h-8 text-primary" />
+        </div>
+        <h1 className="text-3xl md:text-4xl font-bold mb-4">
+          Privacy & Safety
+        </h1>
+        <p className="text-muted-foreground text-lg">
+          How LockLetter protects your privacy and what you should know
         </p>
       </div>
 
       <div className="space-y-6">
+        {/* Safety & Privacy */}
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <CardTitle>Safety & Privacy</CardTitle>
-                <CardDescription>Simple, private, and secure</CardDescription>
-              </div>
-            </div>
+            <CardTitle className="flex items-center gap-2">
+              <Lock className="w-5 h-5 text-primary" />
+              Safety & Privacy
+            </CardTitle>
+            <CardDescription>How your data is handled</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>No user accounts or profiles</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>No public feeds or discovery</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>Capsules are accessible only via private claim codes</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>You control who you share claim codes with</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>Once locked, capsules cannot be edited</span>
-              </li>
-            </ul>
+          <CardContent className="space-y-3 text-sm">
+            <p>
+              <strong>No accounts required.</strong> LockLetter doesn't collect
+              personal information, emails, or passwords. You create capsules
+              anonymously.
+            </p>
+            <p>
+              <strong>Private claim codes.</strong> Each capsule has a unique
+              claim code. Only people with the code can access it. Keep your
+              codes private.
+            </p>
+            <p>
+              <strong>Time-locked content.</strong> Capsules cannot be opened
+              before their unlock date. This is enforced by the system.
+            </p>
           </CardContent>
         </Card>
 
+        {/* Responsible Use */}
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <CardTitle>Responsible Use</CardTitle>
-                <CardDescription>You are in control</CardDescription>
-              </div>
-            </div>
+            <CardTitle className="flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-primary" />
+              Responsible Use
+            </CardTitle>
+            <CardDescription>
+              What you should know before creating capsules
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>CapsuleVault does not review or moderate capsule content</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>Users are responsible for what they create and share</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>Do not include sensitive personal information or use capsules to harm others</span>
-              </li>
-            </ul>
+          <CardContent className="space-y-3 text-sm">
+            <p>
+              <strong>No moderation.</strong> LockLetter does not review capsule
+              content before or after creation. You are responsible for what you
+              write.
+            </p>
+            <p>
+              <strong>Share responsibly.</strong> Only share claim codes with
+              people you trust. Anyone with a code can open the capsule after
+              the unlock date.
+            </p>
+            <p>
+              <strong>Permanent after creation.</strong> Once created, capsules
+              cannot be edited or deleted. Think carefully before locking your
+              message.
+            </p>
           </CardContent>
         </Card>
 
+        {/* Technical Guarantees */}
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Lock className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <CardTitle>Technical Guarantees</CardTitle>
-                <CardDescription>What the system enforces</CardDescription>
-              </div>
-            </div>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-primary" />
+              Technical Guarantees
+            </CardTitle>
+            <CardDescription>What the system ensures</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>Time-locks are enforced automatically</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>Claim codes are required to access capsules</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span>Prediction capsules include a Commit ID proving immutability</span>
-              </li>
-            </ul>
+          <CardContent className="space-y-3 text-sm">
+            <p>
+              <strong>Time-locks are enforced.</strong> The system prevents
+              capsules from being opened before their unlock date. This cannot
+              be bypassed.
+            </p>
+            <p>
+              <strong>Claim codes are unique.</strong> Each capsule has a unique
+              identifier. Codes are generated randomly and cannot be guessed.
+            </p>
+            <p>
+              <strong>Commit IDs for predictions.</strong> Prediction capsules
+              include a cryptographic commit ID that proves the content wasn't
+              changed after creation.
+            </p>
           </CardContent>
         </Card>
       </div>
